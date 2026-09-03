@@ -4091,6 +4091,16 @@ module hipfort_rocblas
       integer(c_int),value :: incx
       type(c_ptr),value :: myResult
     end function
+
+#ifdef USE_FPOINTER_INTERFACES
+#ifdef USE_ASSUMED_RANK_INTERFACES
+    module procedure rocblas_sasum_assumed_rank
+#else
+    module procedure &
+      rocblas_sasum_rank_0,&
+      rocblas_sasum_rank_1
+#endif
+#endif
   end interface
 
   interface rocblas_dasum
@@ -4105,6 +4115,16 @@ module hipfort_rocblas
       integer(c_int),value :: incx
       type(c_ptr),value :: myResult
     end function
+
+#ifdef USE_FPOINTER_INTERFACES
+#ifdef USE_ASSUMED_RANK_INTERFACES
+    module procedure rocblas_dasum_assumed_rank
+#else
+    module procedure &
+      rocblas_dasum_rank_0,&
+      rocblas_dasum_rank_1
+#endif
+#endif
   end interface
 
   interface rocblas_scasum
@@ -4593,6 +4613,16 @@ module hipfort_rocblas
       integer(c_int),value :: incx
       type(c_ptr),value :: myResult
     end function
+
+#ifdef USE_FPOINTER_INTERFACES
+#ifdef USE_ASSUMED_RANK_INTERFACES
+    module procedure rocblas_snrm2_assumed_rank
+#else
+    module procedure &
+      rocblas_snrm2_rank_0,&
+      rocblas_snrm2_rank_1
+#endif
+#endif
   end interface
 
   interface rocblas_dnrm2
@@ -4607,6 +4637,16 @@ module hipfort_rocblas
       integer(c_int),value :: incx
       type(c_ptr),value :: myResult
     end function
+
+#ifdef USE_FPOINTER_INTERFACES
+#ifdef USE_ASSUMED_RANK_INTERFACES
+    module procedure rocblas_dnrm2_assumed_rank
+#else
+    module procedure &
+      rocblas_dnrm2_rank_0,&
+      rocblas_dnrm2_rank_1
+#endif
+#endif
   end interface
 
   interface rocblas_scnrm2
@@ -40410,6 +40450,96 @@ module hipfort_rocblas
 
 #endif
 #ifdef USE_ASSUMED_RANK_INTERFACES
+    function rocblas_sasum_assumed_rank(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_sasum_assumed_rank
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_float),target,contiguous,dimension(..) :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_sasum_assumed_rank = rocblas_sasum_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+#else
+    function rocblas_sasum_rank_0(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_sasum_rank_0
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_float),target :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_sasum_rank_0 = rocblas_sasum_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+    function rocblas_sasum_rank_1(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_sasum_rank_1
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_float),target,dimension(:) :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_sasum_rank_1 = rocblas_sasum_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+#endif
+#ifdef USE_ASSUMED_RANK_INTERFACES
+    function rocblas_dasum_assumed_rank(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_dasum_assumed_rank
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_double),target,contiguous,dimension(..) :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_dasum_assumed_rank = rocblas_dasum_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+#else
+    function rocblas_dasum_rank_0(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_dasum_rank_0
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_double),target :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_dasum_rank_0 = rocblas_dasum_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+    function rocblas_dasum_rank_1(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_dasum_rank_1
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_double),target,dimension(:) :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_dasum_rank_1 = rocblas_dasum_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+#endif
+#ifdef USE_ASSUMED_RANK_INTERFACES
     function rocblas_scasum_assumed_rank(handle,n,x,incx,myResult)
       use iso_c_binding
       use hipfort_rocblas_enums
@@ -40714,6 +40844,96 @@ module hipfort_rocblas
       !
       rocblas_dzasum_strided_batched_rank_1 = rocblas_dzasum_strided_batched_(handle,n,c_loc(x), &
         incx,stridex,batch_count,results)
+    end function
+
+#endif
+#ifdef USE_ASSUMED_RANK_INTERFACES
+    function rocblas_snrm2_assumed_rank(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_snrm2_assumed_rank
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_float),target,contiguous,dimension(..) :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_snrm2_assumed_rank = rocblas_snrm2_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+#else
+    function rocblas_snrm2_rank_0(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_snrm2_rank_0
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_float),target :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_snrm2_rank_0 = rocblas_snrm2_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+    function rocblas_snrm2_rank_1(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_snrm2_rank_1
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_float),target,dimension(:) :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_snrm2_rank_1 = rocblas_snrm2_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+#endif
+#ifdef USE_ASSUMED_RANK_INTERFACES
+    function rocblas_dnrm2_assumed_rank(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_dnrm2_assumed_rank
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_double),target,contiguous,dimension(..) :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_dnrm2_assumed_rank = rocblas_dnrm2_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+#else
+    function rocblas_dnrm2_rank_0(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_dnrm2_rank_0
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_double),target :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_dnrm2_rank_0 = rocblas_dnrm2_(handle,n,c_loc(x),incx,myResult)
+    end function
+
+    function rocblas_dnrm2_rank_1(handle,n,x,incx,myResult)
+      use iso_c_binding
+      use hipfort_rocblas_enums
+      implicit none
+      integer(kind(rocblas_status_success)) :: rocblas_dnrm2_rank_1
+      type(c_ptr) :: handle
+      integer(c_int) :: n
+      real(c_double),target,dimension(:) :: x
+      integer(c_int) :: incx
+      type(c_ptr) :: myResult
+      !
+      rocblas_dnrm2_rank_1 = rocblas_dnrm2_(handle,n,c_loc(x),incx,myResult)
     end function
 
 #endif
