@@ -153,6 +153,49 @@ the first vector before multiplying, and ``rocblas_?dotu`` does not. Compare
 precision as ``zdotc.f08`` and ``zdotu.f08``) to see the different expected
 results for the same input data.
 
+Euclidean norm (nrm2)
+---------------------
+
+``rocblas_?nrm2`` computes the Euclidean norm of a vector and returns it
+through a pointer whose location follows the pointer mode.
+
+.. literalinclude:: ../../test/f2008/rocblas/snrm2.f08
+   :language: fortran
+
+``test/f2008/rocblas/dnrm2.f08`` is the double-precision equivalent. The
+complex forms are named for both types involved, because the norm of a complex
+vector is real: ``rocblas_scnrm2`` takes a single-precision complex vector and
+returns a single-precision real result, and ``rocblas_dznrm2`` is its
+double-precision counterpart. See ``scnrm2.f08`` and ``dznrm2.f08``.
+
+Sum of absolute values (asum)
+-----------------------------
+
+``rocblas_?asum`` sums the absolute values of a vector's elements. For complex
+vectors it sums ``abs(real(x)) + abs(aimag(x))`` per element rather than the
+complex modulus.
+
+.. literalinclude:: ../../test/f2008/rocblas/sasum.f08
+   :language: fortran
+
+``test/f2008/rocblas/dasum.f08`` is the double-precision equivalent, and
+``scasum.f08`` and ``dzasum.f08`` are the mixed real/complex forms named on the
+same convention as ``scnrm2``.
+
+Index of the largest or smallest element (iamax and iamin)
+-----------------------------------------------------------
+
+``rocblas_i?amax`` returns the index of the element with the largest absolute
+value, and ``rocblas_i?amin`` the smallest. The returned index is **1-based**,
+so it can be used to subscript a Fortran array directly.
+
+.. literalinclude:: ../../test/f2008/rocblas/isamax.f08
+   :language: fortran
+
+Both routines exist in all four precisions: ``isamax.f08``, ``idamax.f08``,
+``icamax.f08`` and ``izamax.f08`` for the maximum, and ``isamin.f08``,
+``idamin.f08``, ``icamin.f08`` and ``izamin.f08`` for the minimum.
+
 Level 2: matrix-vector operations
 ==================================
 
@@ -182,6 +225,21 @@ example builds and uploads those pointer arrays explicitly.
 
 This is the only batched ``gemv`` example; there is no single-precision or
 complex counterpart in the test suite.
+
+Rank-1 update (ger)
+-------------------
+
+``rocblas_?ger`` computes ``A := alpha * x * y**T + A``, adding the outer
+product of two vectors to a matrix in place.
+
+.. literalinclude:: ../../test/f2008/rocblas/sger.f08
+   :language: fortran
+
+``test/f2008/rocblas/dger.f08`` is the double-precision equivalent. Complex
+vectors split the routine in two, on the same conjugated/unconjugated
+distinction as ``dotc`` and ``dotu``: ``rocblas_?gerc`` conjugates ``y`` and
+forms ``x * y**H``, while ``rocblas_?geru`` does not and forms ``x * y**T``.
+See ``cgerc.f08``, ``cgeru.f08``, ``zgerc.f08`` and ``zgeru.f08``.
 
 Triangular solve
 ------------------
@@ -272,7 +330,7 @@ separate ``C`` buffer instead of overwriting ``B``.
 .. literalinclude:: ../../test/f2008/rocblas/dtrmm.f08
    :language: fortran
 
-``dtrmm`` is the only ``trmm`` example in the test suite.
+``dtrmm`` is the only ``trmm`` example among the rocBLAS programs.
 
 Triangular solve with multiple right-hand sides
 ----------------------------------------------------
@@ -287,3 +345,62 @@ exit.
 
 ``test/f2008/rocblas/strsm.f08``, ``ctrsm.f08`` and ``ztrsm.f08`` cover the
 remaining precisions.
+
+Rank-k update (syrk and herk)
+--------------------------------
+
+``rocblas_?syrk`` computes ``C := alpha * op(A) * op(A)**T + beta * C``, where
+``C`` is symmetric and only the triangle chosen by the fill mode is
+referenced.
+
+.. literalinclude:: ../../test/f2008/rocblas/ssyrk.f08
+   :language: fortran
+
+``test/f2008/rocblas/dsyrk.f08``, ``csyrk.f08`` and ``zsyrk.f08`` cover the
+remaining precisions. For complex data there is also a Hermitian form,
+``rocblas_?herk``, which uses ``A * A**H`` and produces a matrix with a real
+diagonal; see ``cherk.f08`` and ``zherk.f08``.
+
+Symmetric and Hermitian matrix product (symm and hemm)
+---------------------------------------------------------
+
+``rocblas_?symm`` computes ``C := alpha * A * B + beta * C`` with ``A``
+symmetric, or the mirrored right-hand form selected by the ``side`` argument.
+As with ``syrk``, only one triangle of ``A`` is referenced.
+
+.. literalinclude:: ../../test/f2008/rocblas/ssymm.f08
+   :language: fortran
+
+``test/f2008/rocblas/dsymm.f08``, ``csymm.f08`` and ``zsymm.f08`` cover the
+remaining precisions, and ``rocblas_?hemm`` is the Hermitian form for complex
+data; see ``chemm.f08`` and ``zhemm.f08``.
+
+Matrix addition and transposition (geam)
+--------------------------------------------
+
+``rocblas_?geam`` computes ``C := alpha * op(A) + beta * op(B)``. Because each
+operand has its own transpose flag and either scalar may be zero, the same
+routine also serves as an out-of-place transpose or a scaled copy.
+
+.. literalinclude:: ../../test/f2008/rocblas/sgeam.f08
+   :language: fortran
+
+``test/f2008/rocblas/dgeam.f08``, ``cgeam.f08`` and ``zgeam.f08`` cover the
+remaining precisions.
+
+Extended-precision matrix multiplication (gemm_ex)
+------------------------------------------------------
+
+``rocblas_gemm_ex`` computes ``D := alpha * op(A) * op(B) + beta * C`` with the
+type of every buffer, and the type used for the arithmetic, given explicitly as
+``rocblas_datatype_*`` arguments. That makes it the entry point for mixed
+precision work, and it writes to a separate ``D`` rather than overwriting
+``C``. A ``rocblas_gemm_algo_*`` argument selects the algorithm. This example
+keeps every buffer and the compute type at ``rocblas_datatype_f32_r``, so it
+performs an ordinary single-precision ``gemm``.
+
+.. literalinclude:: ../../test/f2008/rocblas/gemm_ex.f08
+   :language: fortran
+
+Because the buffer types are runtime arguments rather than part of the routine
+name, there is a single ``gemm_ex`` program rather than one per precision.

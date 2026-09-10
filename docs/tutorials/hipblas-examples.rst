@@ -148,6 +148,49 @@ the first vector before multiplying, and ``hipblas?dotu`` does not. Compare
 precision as ``zdotc.f08`` and ``zdotu.f08``) to see the different expected
 results for the same input data.
 
+Euclidean norm (nrm2)
+---------------------
+
+``hipblas?nrm2`` computes the Euclidean norm of a vector and returns it
+through a pointer, which in host pointer mode is an ordinary host variable.
+
+.. literalinclude:: ../../test/f2008/hipblas/snrm2.f08
+   :language: fortran
+
+``test/f2008/hipblas/dnrm2.f08`` is the double-precision equivalent. The
+complex forms are named for both types involved, because the norm of a complex
+vector is real: ``hipblasScnrm2`` takes a single-precision complex vector and
+returns a single-precision real result, and ``hipblasDznrm2`` is its
+double-precision counterpart. See ``scnrm2.f08`` and ``dznrm2.f08``.
+
+Sum of absolute values (asum)
+-----------------------------
+
+``hipblas?asum`` sums the absolute values of a vector's elements. For complex
+vectors it sums ``abs(real(x)) + abs(aimag(x))`` per element rather than the
+complex modulus.
+
+.. literalinclude:: ../../test/f2008/hipblas/sasum.f08
+   :language: fortran
+
+``test/f2008/hipblas/dasum.f08`` is the double-precision equivalent, and
+``scasum.f08`` and ``dzasum.f08`` are the mixed real/complex forms named on the
+same convention as ``scnrm2``.
+
+Index of the largest element (iamax)
+--------------------------------------
+
+``hipblasI?amax`` returns the index of the element with the largest absolute
+value. The returned index is **1-based**, so it can be used to subscript a
+Fortran array directly.
+
+.. literalinclude:: ../../test/f2008/hipblas/isamax.f08
+   :language: fortran
+
+``test/f2008/hipblas/idamax.f08``, ``icamax.f08`` and ``izamax.f08`` cover the
+remaining precisions. The matching ``iamin`` routines have no hipBLAS example
+here; the :doc:`rocBLAS examples <rocblas-examples>` cover them.
+
 Level 2: matrix-vector operations
 ==================================
 
@@ -175,8 +218,10 @@ style even though it lives among the Fortran 2008 sources.
 .. literalinclude:: ../../test/f2008/hipblas/sger.f08
    :language: fortran
 
-``test/f2008/hipblas/dger.f08`` is the double-precision equivalent. There is
-no ``ger`` example among the rocBLAS programs.
+``test/f2008/hipblas/dger.f08`` is the double-precision equivalent. The
+rocBLAS suite additionally provides the conjugated and unconjugated complex
+forms, ``gerc`` and ``geru``; see the :doc:`rocBLAS examples
+<rocblas-examples>`.
 
 Triangular solve
 ------------------
@@ -268,3 +313,72 @@ exit.
 
 ``test/f2008/hipblas/strsm.f08``, ``ctrsm.f08`` and ``ztrsm.f08`` cover the
 remaining precisions.
+
+Triangular matrix multiplication
+------------------------------------
+
+``hipblas?trmm`` computes ``C := alpha * op(A) * B`` (or the mirrored
+right-hand form), where ``A`` is triangular and only the triangle chosen by
+the fill mode is referenced.
+
+.. literalinclude:: ../../test/f2008/hipblas/strmm.f08
+   :language: fortran
+
+``test/f2008/hipblas/dtrmm.f08``, ``ctrmm.f08`` and ``ztrmm.f08`` cover the
+remaining precisions.
+
+Rank-k update (syrk)
+------------------------
+
+``hipblas?syrk`` computes ``C := alpha * op(A) * op(A)**T + beta * C``, where
+``C`` is symmetric and only the triangle chosen by the fill mode is
+referenced.
+
+.. literalinclude:: ../../test/f2008/hipblas/ssyrk.f08
+   :language: fortran
+
+``test/f2008/hipblas/dsyrk.f08``, ``csyrk.f08`` and ``zsyrk.f08`` cover the
+remaining precisions. The Hermitian form, ``herk``, has no hipBLAS example
+here; the :doc:`rocBLAS examples <rocblas-examples>` cover it.
+
+Symmetric matrix product (symm)
+-----------------------------------
+
+``hipblas?symm`` computes ``C := alpha * A * B + beta * C`` with ``A``
+symmetric, or the mirrored right-hand form selected by the ``side`` argument.
+As with ``syrk``, only one triangle of ``A`` is referenced.
+
+.. literalinclude:: ../../test/f2008/hipblas/ssymm.f08
+   :language: fortran
+
+``test/f2008/hipblas/dsymm.f08``, ``csymm.f08`` and ``zsymm.f08`` cover the
+remaining precisions. The Hermitian form, ``hemm``, likewise appears only
+among the rocBLAS programs.
+
+Matrix addition and transposition (geam)
+--------------------------------------------
+
+``hipblas?geam`` computes ``C := alpha * op(A) + beta * op(B)``. Because each
+operand has its own transpose flag and either scalar may be zero, the same
+routine also serves as an out-of-place transpose or a scaled copy.
+
+.. literalinclude:: ../../test/f2008/hipblas/sgeam.f08
+   :language: fortran
+
+``test/f2008/hipblas/dgeam.f08``, ``cgeam.f08`` and ``zgeam.f08`` cover the
+remaining precisions.
+
+Extended-precision matrix multiplication (GemmEx)
+------------------------------------------------------
+
+``hipblasGemmEx`` computes ``D := alpha * op(A) * op(B) + beta * C`` with the
+type of every buffer, and the type used for the arithmetic, given explicitly
+as arguments rather than fixed by the routine name. That makes it the entry
+point for mixed precision work.
+
+.. literalinclude:: ../../test/f2008/hipblas/gemmex.f08
+   :language: fortran
+
+Because the buffer types are runtime arguments, there is a single ``GemmEx``
+program rather than one per precision. Note the source file is ``gemmex.f08``,
+without the underscore used by the rocBLAS equivalent ``gemm_ex.f08``.
