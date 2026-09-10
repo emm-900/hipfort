@@ -72,6 +72,7 @@ libraries:
 The ``hip*`` libraries offer the same functionality through APIs that follow
 their NVIDIA counterparts:
 
+* :doc:`hipBLAS examples <./hipblas-examples>`
 * :doc:`hipFFT examples <./hipfft-examples>`
 * :doc:`hipSOLVER examples <./hipsolver-examples>`
 * :doc:`hipSPARSE examples <./hipsparse-examples>`

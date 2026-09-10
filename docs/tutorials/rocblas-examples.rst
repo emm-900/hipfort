@@ -23,6 +23,9 @@ packed-storage examples, ``dgemv_batched`` and ``stpsv``, are Fortran 2008
 only. One further program, ``test/f2018/rocblas/saxpy.f90``, exercises the
 Fortran 2018 assumed-rank interfaces and is described below.
 
+hipBLAS offers the same functionality through an API that follows cuBLAS; see
+the :doc:`hipBLAS examples <hipblas-examples>`.
+
 The examples are grouped the way the BLAS routines themselves are: Level 1
 operates on vectors, Level 2 on a matrix and a vector, and Level 3 on two
 matrices. Most routines are provided in four precisions, identified by the

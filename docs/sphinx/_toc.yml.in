@@ -29,6 +29,8 @@ subtrees:
         title: rocSOLVER examples
       - file: tutorials/rocsparse-examples.rst
         title: rocSPARSE examples
+      - file: tutorials/hipblas-examples.rst
+        title: hipBLAS examples
       - file: tutorials/hipfft-examples.rst
         title: hipFFT examples
       - file: tutorials/hipfftw-examples.rst
